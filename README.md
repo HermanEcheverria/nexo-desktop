@@ -1,6 +1,6 @@
 # Nexo para Windows
 
-App de escritorio de [Nexo](../nexo-os), el sistema operativo de agentes que cuida tu PC. Es un
+App de escritorio de [Nexo](https://github.com/HermanEcheverria/nexo-os), el sistema operativo de agentes que cuida tu PC. Es un
 **cliente delgado**: el núcleo (agentes, planificador, base de datos) corre en WSL y esta app lo
 muestra y lo controla.
 
