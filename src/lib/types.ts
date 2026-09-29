@@ -16,6 +16,8 @@ export type Report = {
   items: ReportItem[]
   reclaimableBytes: number
   pendingActions?: number
+  summary?: { text: string; source: 'modelo' | 'plantilla'; at: string } | null
+  assistant?: boolean
 }
 
 export type AgentInfo = {
@@ -64,4 +66,11 @@ export type Action = {
   decidedAt: string | null
   executedAt: string | null
   error: string | null
+}
+
+export type Answer = {
+  intencion: 'responder' | 'ejecutar_agente' | 'ver_aprobaciones' | 'fuera_de_alcance'
+  agente: string | null
+  respuesta: string
+  pid: number | null
 }

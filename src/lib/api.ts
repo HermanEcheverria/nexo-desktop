@@ -1,6 +1,6 @@
 import { invoke, isTauri } from '@tauri-apps/api/core'
 
-import type { Action, AgentInfo, JournalEvent, Process, Report } from './types'
+import type { Action, AgentInfo, Answer, JournalEvent, Process, Report } from './types'
 
 export const API = 'http://127.0.0.1:4747'
 
@@ -60,6 +60,12 @@ export const api = {
   undoableActions: () => request<Action[]>('/acciones?estado=deshacibles'),
   decide: (id: number, verb: 'aprobar' | 'rechazar' | 'deshacer') =>
     request<Action>(`/acciones/${id}/${verb}`, { method: 'POST' }),
+  ask: (texto: string) =>
+    request<Answer>('/preguntar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto }),
+    }),
   refreshAll: () => request<{ ok: boolean }>('/iniciar-sesion', { method: 'POST' }),
   /** Flujo de la bitácora en vivo. EventSource no permite enviar el token, por eso fetch. */
   async events(signal: AbortSignal): Promise<ReadableStream<Uint8Array>> {

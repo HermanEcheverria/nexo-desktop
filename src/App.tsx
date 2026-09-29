@@ -2,6 +2,7 @@ import { invoke, isTauri } from '@tauri-apps/api/core'
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification'
 import { useEffect, useRef, useState } from 'react'
 
+import { CommandBar } from './components/CommandBar'
 import { ServiceGate } from './components/ServiceGate'
 import { Sidebar, type View } from './components/Sidebar'
 import { useJournal } from './hooks/useJournal'
@@ -75,6 +76,7 @@ export default function App() {
         pending={ready ? pending.length : 0}
       />
       <main className="min-w-0 flex-1 overflow-y-auto">
+        {ready && <CommandBar onNavigate={go} />}
         {!ready ? (
           <ServiceGate status={status} onRetry={retry} />
         ) : view === 'parte' ? (

@@ -71,6 +71,21 @@ export function ReportView({ name = 'Andrés', onApprovals }: { name?: string; o
         </button>
       </header>
 
+      {report.summary && (
+        <section
+          aria-label="Resumen de Nexo"
+          className="tarjeta border-l-cobalto flex flex-col gap-2 border-l-4 p-6"
+        >
+          <p className="text-grafito font-mono text-xs tracking-[0.15em] uppercase">
+            Resumen de Nexo ·{' '}
+            {report.summary.source === 'modelo' ? 'redactado por el modelo local' : 'resumen exacto'}
+          </p>
+          <p data-copiable className="text-xl leading-relaxed">
+            {report.summary.text}
+          </p>
+        </section>
+      )}
+
       {report.pendingActions ? (
         <button
           type="button"
