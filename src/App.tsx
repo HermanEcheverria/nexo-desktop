@@ -9,9 +9,11 @@ import { useJournal } from './hooks/useJournal'
 import { useService } from './hooks/useService'
 import { api } from './lib/api'
 import { bytes } from './lib/format'
-import { usePendingActions } from './hooks/queries'
+import { usePendingActions, useReport } from './hooks/queries'
+import { nexoState } from './hooks/useNexoState'
 import { AgentsView } from './views/AgentsView'
 import { ApprovalsView } from './views/ApprovalsView'
+import { ConversationsView } from './views/ConversationsView'
 import { JournalView } from './views/JournalView'
 import { ReportView } from './views/ReportView'
 
@@ -38,7 +40,7 @@ async function morningRun() {
   })
 }
 
-const VIEWS: View[] = ['parte', 'aprobaciones', 'agentes', 'bitacora']
+const VIEWS: View[] = ['parte', 'conversaciones', 'aprobaciones', 'agentes', 'bitacora']
 
 /** La vista activa vive en la dirección (#agentes), así se puede abrir directo. */
 function initialView(): View {
@@ -53,6 +55,11 @@ export default function App() {
   const { events, live } = useJournal(ready)
   const ranMorning = useRef(false)
   const { data: pending = [] } = usePendingActions(ready)
+  const { data: report } = useReport(ready)
+  const [incoming, setIncoming] = useState<string | null>(null)
+  const [thinking, setThinking] = useState(false)
+  const warnings = report?.items.filter((i) => i.level === 'warning').length ?? 0
+  const state = nexoState({ status, events, thinking, needsAttention: pending.length > 0 || warnings > 0 })
 
   const go = (next: View) => {
     setView(next)
@@ -74,13 +81,30 @@ export default function App() {
         live={live}
         onWorkstation={() => void (isTauri() && invoke('open_workstation'))}
         pending={ready ? pending.length : 0}
+        state={state}
       />
-      <main className="min-w-0 flex-1 overflow-y-auto">
-        {ready && <CommandBar onNavigate={go} />}
+      <main
+        className={`min-w-0 flex-1 ${view === 'conversaciones' && ready ? 'overflow-hidden' : 'overflow-y-auto'}`}
+      >
+        {ready && view !== 'conversaciones' && (
+          <CommandBar
+            onAsk={(question) => {
+              setIncoming(question)
+              go('conversaciones')
+            }}
+          />
+        )}
         {!ready ? (
           <ServiceGate status={status} onRetry={retry} />
         ) : view === 'parte' ? (
           <ReportView onApprovals={() => go('aprobaciones')} />
+        ) : view === 'conversaciones' ? (
+          <ConversationsView
+            incoming={incoming}
+            onIncomingHandled={() => setIncoming(null)}
+            onNavigate={go}
+            onThinking={setThinking}
+          />
         ) : view === 'aprobaciones' ? (
           <ApprovalsView />
         ) : view === 'agentes' ? (

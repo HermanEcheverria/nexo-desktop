@@ -1,6 +1,15 @@
 import { invoke, isTauri } from '@tauri-apps/api/core'
 
-import type { Action, AgentInfo, Answer, JournalEvent, Process, Report } from './types'
+import type {
+  Action,
+  AgentInfo,
+  Answer,
+  ChatMessage,
+  ConversationSummary,
+  JournalEvent,
+  Process,
+  Report,
+} from './types'
 
 export const API = 'http://127.0.0.1:4747'
 
@@ -62,6 +71,17 @@ export const api = {
     request<Action>(`/acciones/${id}/${verb}`, { method: 'POST' }),
   ask: (texto: string) =>
     request<Answer>('/preguntar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto }),
+    }),
+  conversations: () => request<ConversationSummary[]>('/conversaciones'),
+  conversation: (id: number) =>
+    request<{ conversation: ConversationSummary; messages: ChatMessage[] }>(`/conversaciones/${id}`),
+  createConversation: () => request<ConversationSummary>('/conversaciones', { method: 'POST' }),
+  deleteConversation: (id: number) => request<{ ok: boolean }>(`/conversaciones/${id}`, { method: 'DELETE' }),
+  send: (id: number, texto: string) =>
+    request<ChatMessage>(`/conversaciones/${id}/mensajes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ texto }),

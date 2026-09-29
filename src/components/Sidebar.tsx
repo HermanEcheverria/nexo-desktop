@@ -1,9 +1,11 @@
 import type { ServiceStatus } from '../hooks/useService'
+import { NexoLogo, type NexoState } from './NexoLogo'
 
-export type View = 'parte' | 'aprobaciones' | 'agentes' | 'bitacora'
+export type View = 'parte' | 'conversaciones' | 'aprobaciones' | 'agentes' | 'bitacora'
 
 const NAV: { id: View; label: string; hint: string }[] = [
   { id: 'parte', label: 'Parte del día', hint: 'Lo que encontraron tus agentes' },
+  { id: 'conversaciones', label: 'Conversaciones', hint: 'Pregúntale a Nexo' },
   { id: 'aprobaciones', label: 'Aprobaciones', hint: 'Lo que tus agentes proponen' },
   { id: 'agentes', label: 'Agentes', hint: 'Quién trabaja y con qué permisos' },
   { id: 'bitacora', label: 'Bitácora', hint: 'Todo lo que pasa, en vivo' },
@@ -24,14 +26,19 @@ type Props = {
   onWorkstation: () => void
   /** Acciones esperando aprobación: se muestra junto a la sección. */
   pending: number
+  /** Estado del logo vivo. */
+  state: NexoState
 }
 
-export function Sidebar({ view, onChange, status, live, onWorkstation, pending }: Props) {
+export function Sidebar({ view, onChange, status, live, onWorkstation, pending, state }: Props) {
   const s = STATUS[status]
   return (
     <aside className="border-tinta bg-papel-claro flex w-64 shrink-0 flex-col border-r-[1.5px]">
-      <div className="border-tinta border-b-[1.5px] px-6 py-6">
-        <p className="font-display text-4xl leading-none">Nexo</p>
+      <div className="border-tinta flex flex-col gap-1 border-b-[1.5px] px-6 py-6">
+        <div className="flex items-center gap-3">
+          <NexoLogo state={state} size={52} />
+          <p className="font-display text-4xl leading-none">Nexo</p>
+        </div>
         <p className="text-grafito mt-2 font-mono text-[11px] tracking-[0.15em] uppercase">
           Sistema operativo de agentes
         </p>

@@ -7,9 +7,10 @@ export const keys = {
   agents: ['agentes'] as const,
   processes: ['procesos'] as const,
   actions: ['acciones'] as const,
+  conversations: ['conversaciones'] as const,
 }
 
-export const useReport = () => useQuery({ queryKey: keys.report, queryFn: api.report })
+export const useReport = (enabled = true) => useQuery({ queryKey: keys.report, queryFn: api.report, enabled })
 export const useAgents = () => useQuery({ queryKey: keys.agents, queryFn: api.agents, staleTime: Infinity })
 export const useProcesses = () => useQuery({ queryKey: keys.processes, queryFn: () => api.processes() })
 

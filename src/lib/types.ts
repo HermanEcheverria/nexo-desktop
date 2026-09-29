@@ -75,3 +75,16 @@ export type Answer = {
   respuesta: string
   pid: number | null
 }
+
+export type ConversationSummary = { id: number; title: string; updatedAt: string; messages: number }
+
+export type ChatMessage = {
+  id: number
+  conversationId: number
+  role: 'user' | 'assistant'
+  content: string
+  intent: Answer['intencion'] | null
+  agent: string | null
+  pid: number | null
+  createdAt: string
+}
