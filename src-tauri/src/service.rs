@@ -38,7 +38,8 @@ pub fn is_running() -> bool {
         return false;
     };
     let _ = stream.set_read_timeout(Some(Duration::from_millis(800)));
-    let request = format!("GET /estado HTTP/1.1\r\nHost: 127.0.0.1:{PORT}\r\nConnection: close\r\n\r\n");
+    let request =
+        format!("GET /estado HTTP/1.1\r\nHost: 127.0.0.1:{PORT}\r\nConnection: close\r\n\r\n");
     if stream.write_all(request.as_bytes()).is_err() {
         return false;
     }
@@ -63,7 +64,15 @@ pub fn start() -> std::io::Result<()> {
 /// Abre Windows Terminal con la sesión de tmux de trabajo.
 pub fn open_workstation() -> std::io::Result<()> {
     Command::new("wt.exe")
-        .args(["wsl.exe", "-d", DISTRO, "--", "bash", "-lc", WORKSTATION_SCRIPT])
+        .args([
+            "wsl.exe",
+            "-d",
+            DISTRO,
+            "--",
+            "bash",
+            "-lc",
+            WORKSTATION_SCRIPT,
+        ])
         .spawn()
         .map(|_| ())
 }

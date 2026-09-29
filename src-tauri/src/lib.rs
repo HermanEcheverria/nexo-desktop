@@ -4,13 +4,15 @@ mod commands;
 mod service;
 mod tray;
 
-use tauri::{Manager, WindowEvent};
+use tauri::WindowEvent;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         // Una sola instancia: abrirla otra vez solo trae la ventana al frente
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| tray::show_main(app)))
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            tray::show_main(app)
+        }))
         .plugin(
             tauri_plugin_log::Builder::new()
                 .level(tauri_plugin_log::log::LevelFilter::Info)

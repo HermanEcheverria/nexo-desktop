@@ -58,3 +58,9 @@
 @utility boton {
   @apply border-tinta bg-papel-claro inline-flex cursor-pointer items-center gap-2 border-[1.5px] px-3.5 py-2 font-mono text-sm shadow-[3px_3px_0_var(--color-tinta)] transition-[transform,box-shadow] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--color-tinta)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:cursor-wait disabled:opacity-60;
 }
+
+/* Barra de desplazamiento delgada, en tinta sobre papel */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-grafito) transparent;
+}
