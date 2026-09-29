@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+/* Mismo sistema visual que el portafolio y el Observatorio: papel, tinta y cobalto */
+@theme {
+  --color-papel: #ece7dc;
+  --color-papel-claro: #f4f0e7;
+  --color-tinta: #161514;
+  --color-tinta-suave: #3d3a35;
+  --color-grafito: #5a564f;
+  --color-cobalto: #2743d6;
+  --color-cobalto-oscuro: #1a2f9e;
+  --color-bermellon: #c8442f;
+  --color-rejilla: color-mix(in srgb, var(--color-tinta) 12%, var(--color-papel-claro));
+
+  --font-display: 'Young Serif', Georgia, serif;
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-papel text-tinta font-sans antialiased select-none;
+  }
+  /* El texto de datos sí se puede copiar */
+  [data-copiable] {
+    @apply select-text;
+  }
+  :focus-visible {
+    @apply outline-cobalto outline-2 outline-offset-2;
+  }
+  ::selection {
+    @apply bg-cobalto text-papel;
+  }
+}
+
+@utility tarjeta {
+  @apply border-tinta bg-papel-claro border-[1.5px];
+}
+
+@utility rayado {
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-tinta) 55%, transparent) 0 1px,
+    transparent 1px 6px
+  );
+}
+
+@utility cifras {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Botón con sombra de grabado */
+@utility boton {
+  @apply border-tinta bg-papel-claro inline-flex cursor-pointer items-center gap-2 border-[1.5px] px-3.5 py-2 font-mono text-sm shadow-[3px_3px_0_var(--color-tinta)] transition-[transform,box-shadow] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--color-tinta)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:cursor-wait disabled:opacity-60;
+}

@@ -1,0 +1,11 @@
+node_modules
+dist
+src-tauri/target
+src-tauri/gen
+.env.local
+*.local
+
+# Herramientas locales
+.claude/
+CLAUDE.md
+.vscode/
