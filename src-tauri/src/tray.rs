@@ -1,5 +1,6 @@
 //! Ícono en la bandeja del sistema: Nexo sigue trabajando aunque cierres la ventana.
 
+use tauri::image::Image;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, Runtime};
@@ -25,10 +26,8 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     let separator = PredefinedMenuItem::separator(app)?;
     let menu = Menu::with_items(app, &[&open, &workstation, &separator, &quit])?;
 
-    let icon = app
-        .default_window_icon()
-        .cloned()
-        .expect("la app debe tener ícono");
+    // Versión blanca y simplificada: se lee a 16 px sobre la barra de tareas oscura
+    let icon = Image::from_bytes(include_bytes!("../icons/tray.png"))?;
     TrayIconBuilder::with_id("principal")
         .icon(icon)
         .tooltip("Nexo")
