@@ -30,5 +30,5 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: Nexo ${{ github.ref_name }}
-          releaseBody: Instalador de Windows. Sin firma digital: SmartScreen mostrará un aviso la primera vez.
+          releaseBody: "Instalador de Windows. Sin firma digital: SmartScreen mostrará un aviso la primera vez."
           releaseDraft: true
