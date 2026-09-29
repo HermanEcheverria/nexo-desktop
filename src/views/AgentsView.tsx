@@ -16,6 +16,7 @@ const TRIGGER: Record<Process['trigger'], string> = {
   login: 'al iniciar sesión',
   manual: 'a pedido',
   retry: 'reintento',
+  followup: 'tras una acción',
 }
 
 function duration(p: Process): string {

@@ -5,6 +5,7 @@ const TRIGGERS: Record<string, string> = {
   login: 'al iniciar sesión',
   manual: 'a pedido',
   retry: 'reintento',
+  followup: 'tras una acción',
 }
 
 const LABELS: Record<string, string> = {
@@ -18,6 +19,13 @@ const LABELS: Record<string, string> = {
   interrupted: 'interrumpido',
   message: 'nota',
   login: 'inicio de sesión',
+  proposal: 'propuso',
+  approved: 'aprobaste',
+  rejected: 'rechazaste',
+  action_done: 'acción hecha',
+  action_failed: 'acción falló',
+  undone: 'deshecho',
+  purged: 'borrado definitivo',
 }
 
 /** Resumen legible de cada evento; el detalle completo se ve al pasar el mouse. */
@@ -29,7 +37,16 @@ export function describe(e: JournalEvent): string {
     case 'tool_denied':
       return `${d.tool} (${d.reason === 'needs-approval' ? 'necesita tu aprobación' : 'sin permiso'})`
     case 'finding':
+    case 'proposal':
       return String(d.title)
+    case 'approved':
+    case 'rejected':
+    case 'action_done':
+    case 'undone':
+    case 'purged':
+      return `acción #${d.action}`
+    case 'action_failed':
+      return `acción #${d.action}: ${d.error}`
     case 'exit':
       return d.state === 'done' ? 'bien' : `${d.state}: ${d.error ?? ''}`
     case 'spawn':

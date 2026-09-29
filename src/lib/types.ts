@@ -33,7 +33,7 @@ export type Process = {
   pid: number
   agent: string
   state: ProcessState
-  trigger: 'schedule' | 'login' | 'manual' | 'retry'
+  trigger: 'schedule' | 'login' | 'manual' | 'retry' | 'followup'
   attempt: number
   createdAt: string
   startedAt: string | null
