@@ -151,7 +151,7 @@ export function ConversationsView({ incoming, onIncomingHandled, onNavigate, onT
                 <>
                   <Bubble message={{ role: 'user', content: optimistic }} onNavigate={onNavigate} />
                   <li className="text-grafito flex items-center gap-3">
-                    <NexoLogo state="pensando" size={32} />
+                    <NexoLogo state="pensando" size={44} />
                     <span className="font-mono text-sm">Pensando…</span>
                   </li>
                 </>

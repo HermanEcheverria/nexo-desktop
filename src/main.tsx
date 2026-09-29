@@ -10,6 +10,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import App from './App'
+import { LogoGallery } from './components/LogoGallery'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,7 +22,8 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      {/* #logos, solo en desarrollo: galería con los estados del logo */}
+      {import.meta.env.DEV && window.location.hash === '#logos' ? <LogoGallery /> : <App />}
     </QueryClientProvider>
   </StrictMode>,
 )

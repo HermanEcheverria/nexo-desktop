@@ -60,6 +60,19 @@ export function NexoLogo({
         stroke="var(--color-tinta)"
         strokeWidth="34"
       />
+      <g fill="none" stroke="var(--color-cobalto)" strokeWidth="26" strokeLinecap="round">
+        <path className="logo-onda" d="M77 500 A410 410 0 0 1 897 500" />
+        <path className="logo-onda logo-onda-2" d="M77 500 A410 410 0 0 1 897 500" />
+      </g>
+      <circle
+        className="logo-ping"
+        cx="487"
+        cy="500"
+        r="150"
+        fill="none"
+        stroke="var(--color-bermellon)"
+        strokeWidth="24"
+      />
       <g fill="none" stroke="var(--color-tinta)" strokeWidth="34">
         <path className="logo-arco logo-arco-externo" d="M157 500 A330 330 0 0 1 817 500" />
         <path className="logo-arco logo-arco-interno" d="M247 500 A240 240 0 0 1 727 500" />
