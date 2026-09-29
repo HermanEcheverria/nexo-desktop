@@ -15,6 +15,7 @@ export type Report = {
   agents: { name: string; title: string; checkedAt: string | null; state: string | null }[]
   items: ReportItem[]
   reclaimableBytes: number
+  pendingActions?: number
 }
 
 export type AgentInfo = {
@@ -47,4 +48,20 @@ export type JournalEvent = {
   agent: string | null
   type: string
   data: Record<string, unknown>
+}
+
+export type ActionState = 'pending' | 'running' | 'done' | 'failed' | 'rejected' | 'undone' | 'purged'
+
+export type Action = {
+  id: number
+  agent: string
+  tool: string
+  title: string
+  detail: string | null
+  bytes: number | null
+  state: ActionState
+  createdAt: string
+  decidedAt: string | null
+  executedAt: string | null
+  error: string | null
 }

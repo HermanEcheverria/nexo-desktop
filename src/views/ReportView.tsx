@@ -45,7 +45,7 @@ function Item({
   )
 }
 
-export function ReportView({ name = 'Andrés' }: { name?: string }) {
+export function ReportView({ name = 'Andrés', onApprovals }: { name?: string; onApprovals?: () => void }) {
   const { data: report, isPending, isError } = useReport()
   const refresh = useRefreshAll()
 
@@ -70,6 +70,25 @@ export function ReportView({ name = 'Andrés' }: { name?: string }) {
           {refresh.isPending ? 'Tus agentes están revisando…' : 'Revisar ahora'}
         </button>
       </header>
+
+      {report.pendingActions ? (
+        <button
+          type="button"
+          onClick={onApprovals}
+          className="tarjeta border-cobalto hover:bg-papel flex cursor-pointer items-center justify-between gap-4 p-5 text-left"
+        >
+          <span>
+            <span className="font-medium">
+              {report.pendingActions} {report.pendingActions === 1 ? 'acción espera' : 'acciones esperan'} tu
+              aprobación
+            </span>
+            <span className="text-grafito block text-sm">
+              Tus agentes proponen liberar espacio. Nada se mueve sin tu permiso.
+            </span>
+          </span>
+          <span className="text-cobalto font-mono text-sm">Revisar →</span>
+        </button>
+      ) : null}
 
       <section aria-label="Resumen" className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
         <div className="tarjeta flex flex-col gap-2 p-6">

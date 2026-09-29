@@ -8,7 +8,9 @@ import { useJournal } from './hooks/useJournal'
 import { useService } from './hooks/useService'
 import { api } from './lib/api'
 import { bytes } from './lib/format'
+import { usePendingActions } from './hooks/queries'
 import { AgentsView } from './views/AgentsView'
+import { ApprovalsView } from './views/ApprovalsView'
 import { JournalView } from './views/JournalView'
 import { ReportView } from './views/ReportView'
 
@@ -28,13 +30,14 @@ async function morningRun() {
         ? `${warnings} ${warnings === 1 ? 'cosa requiere' : 'cosas requieren'} tu atención`
         : 'Nada urgente',
       report.reclaimableBytes ? `podrías liberar ${bytes(report.reclaimableBytes)}` : null,
+      report.pendingActions ? `${report.pendingActions} por aprobar` : null,
     ]
       .filter(Boolean)
       .join(' · '),
   })
 }
 
-const VIEWS: View[] = ['parte', 'agentes', 'bitacora']
+const VIEWS: View[] = ['parte', 'aprobaciones', 'agentes', 'bitacora']
 
 /** La vista activa vive en la dirección (#agentes), así se puede abrir directo. */
 function initialView(): View {
@@ -48,6 +51,12 @@ export default function App() {
   const ready = status === 'ready'
   const { events, live } = useJournal(ready)
   const ranMorning = useRef(false)
+  const { data: pending = [] } = usePendingActions(ready)
+
+  const go = (next: View) => {
+    setView(next)
+    window.history.replaceState(null, '', `#${next}`)
+  }
 
   useEffect(() => {
     if (!ready || ranMorning.current) return
@@ -59,19 +68,19 @@ export default function App() {
     <div className="flex h-full">
       <Sidebar
         view={view}
-        onChange={(next) => {
-          setView(next)
-          window.history.replaceState(null, '', `#${next}`)
-        }}
+        onChange={go}
         status={status}
         live={live}
         onWorkstation={() => void (isTauri() && invoke('open_workstation'))}
+        pending={ready ? pending.length : 0}
       />
       <main className="min-w-0 flex-1 overflow-y-auto">
         {!ready ? (
           <ServiceGate status={status} onRetry={retry} />
         ) : view === 'parte' ? (
-          <ReportView />
+          <ReportView onApprovals={() => go('aprobaciones')} />
+        ) : view === 'aprobaciones' ? (
+          <ApprovalsView />
         ) : view === 'agentes' ? (
           <AgentsView />
         ) : (

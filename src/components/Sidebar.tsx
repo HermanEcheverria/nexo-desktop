@@ -1,9 +1,10 @@
 import type { ServiceStatus } from '../hooks/useService'
 
-export type View = 'parte' | 'agentes' | 'bitacora'
+export type View = 'parte' | 'aprobaciones' | 'agentes' | 'bitacora'
 
 const NAV: { id: View; label: string; hint: string }[] = [
   { id: 'parte', label: 'Parte del día', hint: 'Lo que encontraron tus agentes' },
+  { id: 'aprobaciones', label: 'Aprobaciones', hint: 'Lo que tus agentes proponen' },
   { id: 'agentes', label: 'Agentes', hint: 'Quién trabaja y con qué permisos' },
   { id: 'bitacora', label: 'Bitácora', hint: 'Todo lo que pasa, en vivo' },
 ]
@@ -21,9 +22,11 @@ type Props = {
   status: ServiceStatus
   live: boolean
   onWorkstation: () => void
+  /** Acciones esperando aprobación: se muestra junto a la sección. */
+  pending: number
 }
 
-export function Sidebar({ view, onChange, status, live, onWorkstation }: Props) {
+export function Sidebar({ view, onChange, status, live, onWorkstation, pending }: Props) {
   const s = STATUS[status]
   return (
     <aside className="border-tinta bg-papel-claro flex w-64 shrink-0 flex-col border-r-[1.5px]">
@@ -43,7 +46,14 @@ export function Sidebar({ view, onChange, status, live, onWorkstation }: Props) 
             aria-current={view === item.id ? 'page' : undefined}
             className="hover:border-tinta aria-[current=page]:border-tinta aria-[current=page]:bg-tinta aria-[current=page]:text-papel flex cursor-pointer flex-col items-start border-[1.5px] border-transparent px-3 py-2.5 text-left"
           >
-            <span className="font-medium">{item.label}</span>
+            <span className="flex w-full items-center justify-between font-medium">
+              {item.label}
+              {item.id === 'aprobaciones' && pending > 0 && (
+                <span className="cifras bg-cobalto text-papel min-w-6 rounded-full px-2 text-center font-mono text-xs">
+                  {pending}
+                </span>
+              )}
+            </span>
             <span className="text-xs opacity-70">{item.hint}</span>
           </button>
         ))}
