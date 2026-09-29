@@ -18,6 +18,7 @@ export type Report = {
   pendingActions?: number
   summary?: { text: string; source: 'modelo' | 'plantilla'; at: string } | null
   assistant?: boolean
+  userName?: string
 }
 
 export type AgentInfo = {

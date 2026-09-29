@@ -14,7 +14,7 @@ export function ServiceGate({ status, onRetry }: { status: ServiceStatus; onRetr
         </h1>
         <p className="text-tinta-suave leading-relaxed">
           {unreachable
-            ? 'El núcleo corre en WSL (Ubuntu). Revisa que WSL funcione o enciéndelo a mano con "nexo servicio".'
+            ? 'El núcleo corre en WSL (Ubuntu). Revisa que WSL funcione y que el comando "nexo" esté instalado, o enciéndelo a mano con "nexo servicio".'
             : 'El núcleo corre en WSL. La primera vez del día puede tardar unos segundos mientras Ubuntu despierta.'}
         </p>
         {unreachable && (

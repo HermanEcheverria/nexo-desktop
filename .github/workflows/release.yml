@@ -1,0 +1,34 @@
+name: Instalador
+
+# Al publicar una etiqueta de versión (v0.3.0…), se compila el instalador de Windows
+# y se adjunta a un borrador de release en GitHub.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  instalador:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: pnpm install --frozen-lockfile
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Nexo ${{ github.ref_name }}
+          releaseBody: Instalador de Windows. Sin firma digital: SmartScreen mostrará un aviso la primera vez.
+          releaseDraft: true

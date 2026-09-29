@@ -8,6 +8,7 @@ import { ReportView } from './ReportView'
 const GB = 1024 ** 3
 const report: Report = {
   generatedAt: '2026-09-29T15:00:00Z',
+  userName: 'Andrés',
   agents: [{ name: 'jardinero', title: 'Jardinero', checkedAt: '2026-09-29T15:00:00Z', state: 'done' }],
   reclaimableBytes: 85 * GB,
   items: [
@@ -44,7 +45,7 @@ function renderWithClient() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
     <QueryClientProvider client={client}>
-      <ReportView name="Andrés" />
+      <ReportView />
     </QueryClientProvider>,
   )
 }

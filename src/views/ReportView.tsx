@@ -45,7 +45,7 @@ function Item({
   )
 }
 
-export function ReportView({ name = 'Andrés', onApprovals }: { name?: string; onApprovals?: () => void }) {
+export function ReportView({ onApprovals }: { onApprovals?: () => void }) {
   const { data: report, isPending, isError } = useReport()
   const refresh = useRefreshAll()
 
@@ -63,7 +63,8 @@ export function ReportView({ name = 'Andrés', onApprovals }: { name?: string; o
         <div>
           <p className="text-grafito font-mono text-xs tracking-[0.2em] uppercase">Parte del {date}</p>
           <h1 className="font-display mt-2 text-5xl">
-            {greeting()}, {name}.
+            {greeting()}
+            {report.userName ? `, ${report.userName}` : ''}.
           </h1>
         </div>
         <button type="button" className="boton" onClick={() => refresh.mutate()} disabled={refresh.isPending}>

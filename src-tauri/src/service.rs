@@ -11,8 +11,9 @@ use std::time::Duration;
 
 /// Tu distribución de Ubuntu. Hay que nombrarla: la predeterminada es `docker-desktop`.
 const DISTRO: &str = "Ubuntu";
-/// Cómo se enciende el servicio dentro de WSL.
-const START_SCRIPT: &str = "exec ~/Trabajo/nexo-os/bin/nexo servicio";
+/// Cómo se enciende el servicio dentro de WSL: el comando `nexo` debe estar en el PATH
+/// (el README de nexo-os explica cómo enlazarlo en ~/.local/bin).
+const START_SCRIPT: &str = "exec nexo servicio";
 /// Tu estación de trabajo: la sesión de tmux de siempre.
 const WORKSTATION_SCRIPT: &str = "~/iniciar_entorno.sh";
 
