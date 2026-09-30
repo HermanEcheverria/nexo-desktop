@@ -163,9 +163,7 @@ export function ConversationsView({ incoming, onIncomingHandled, onNavigate, onT
 
         {send.isError && (
           <p role="alert" className="text-bermellon px-8 pb-2 text-sm">
-            {send.error.message.includes('502')
-              ? 'El modelo local no respondió. Revisa que Ollama esté abierto.'
-              : 'No pude enviar el mensaje.'}
+            {send.error.message}
           </p>
         )}
         <form

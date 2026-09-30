@@ -45,7 +45,11 @@ export async function request<T>(path: string, init: RequestInit = {}, retried =
     await getToken(true)
     return request(path, init, true)
   }
-  if (!res.ok) throw new ApiError(res.status, `${path} respondió ${res.status}`)
+  if (!res.ok) {
+    // El núcleo explica el error en español: se muestra tal cual
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new ApiError(res.status, body?.error ?? `${path} respondió ${res.status}`)
+  }
   return (await res.json()) as T
 }
 
