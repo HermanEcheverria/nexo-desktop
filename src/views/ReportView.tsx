@@ -45,6 +45,27 @@ function Item({
   )
 }
 
+function Figure({
+  label,
+  value,
+  tone,
+  children,
+}: {
+  label: string
+  value: string
+  tone?: 'alerta' | 'accion'
+  children: React.ReactNode
+}) {
+  const color = tone === 'alerta' ? 'text-bermellon' : tone === 'accion' ? 'text-cobalto' : ''
+  return (
+    <div className="flex h-full flex-col gap-1 p-6">
+      <p className="rotulo">{label}</p>
+      <p className={`font-display cifras text-5xl leading-tight whitespace-nowrap ${color}`}>{value}</p>
+      <p className="text-grafito text-sm">{children}</p>
+    </div>
+  )
+}
+
 export function ReportView({ onApprovals }: { onApprovals?: () => void }) {
   const { data: report, isPending, isError } = useReport()
   const refresh = useRefreshAll()
@@ -59,76 +80,73 @@ export function ReportView({ onApprovals }: { onApprovals?: () => void }) {
 
   return (
     <div className="flex flex-col gap-8 p-8 lg:p-10">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-grafito font-mono text-xs tracking-[0.2em] uppercase">Parte del {date}</p>
-          <h1 className="font-display mt-2 text-5xl">
-            {greeting()}
-            {report.userName ? `, ${report.userName}` : ''}.
-          </h1>
+      <header className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="rotulo first-letter:uppercase">{date}</p>
+            <h1 className="font-display mt-1 text-5xl">
+              {greeting()}
+              {report.userName ? `, ${report.userName}` : ''}.
+            </h1>
+          </div>
+          <button
+            type="button"
+            className="boton"
+            onClick={() => refresh.mutate()}
+            disabled={refresh.isPending}
+            aria-busy={refresh.isPending}
+          >
+            {refresh.isPending ? 'Tus agentes están revisando…' : 'Revisar ahora'}
+          </button>
         </div>
-        <button type="button" className="boton" onClick={() => refresh.mutate()} disabled={refresh.isPending}>
-          {refresh.isPending ? 'Tus agentes están revisando…' : 'Revisar ahora'}
-        </button>
+        {report.summary && (
+          <div className="border-cobalto flex max-w-3xl flex-col gap-1 border-l-4 pl-5">
+            <p data-copiable className="text-xl leading-relaxed">
+              {report.summary.text}
+            </p>
+            <p className="rotulo">
+              {report.summary.source === 'modelo' ? 'Lo redactó el modelo local' : 'Resumen exacto'},{' '}
+              {ago(report.summary.at)}.
+            </p>
+          </div>
+        )}
       </header>
 
-      {report.summary && (
-        <section
-          aria-label="Resumen de Nexo"
-          className="tarjeta border-l-cobalto flex flex-col gap-2 border-l-4 p-6"
-        >
-          <p className="text-grafito font-mono text-xs tracking-[0.15em] uppercase">
-            Resumen de Nexo ·{' '}
-            {report.summary.source === 'modelo' ? 'redactado por el modelo local' : 'resumen exacto'}
-          </p>
-          <p data-copiable className="text-xl leading-relaxed">
-            {report.summary.text}
-          </p>
-        </section>
-      )}
-
-      {report.pendingActions ? (
-        <button
-          type="button"
-          onClick={onApprovals}
-          className="tarjeta border-cobalto hover:bg-papel flex cursor-pointer items-center justify-between gap-4 p-5 text-left"
-        >
-          <span>
-            <span className="font-medium">
-              {report.pendingActions} {report.pendingActions === 1 ? 'acción espera' : 'acciones esperan'} tu
-              aprobación
-            </span>
-            <span className="text-grafito block text-sm">
-              Tus agentes proponen liberar espacio. Nada se mueve sin tu permiso.
-            </span>
-          </span>
-          <span className="text-cobalto font-mono text-sm">Revisar →</span>
-        </button>
-      ) : null}
-
-      <section aria-label="Resumen" className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
-        <div className="tarjeta flex flex-col gap-2 p-6">
-          <p className="text-grafito font-mono text-xs tracking-[0.15em] uppercase">Podrías liberar</p>
-          <p className="text-6xl leading-none font-semibold">{bytes(report.reclaimableBytes)}</p>
-          <p className="text-grafito text-sm">
-            Sumando las sugerencias de tus agentes. Nada se borra sin tu permiso.
-          </p>
-        </div>
-        <div className="tarjeta flex flex-col gap-2 p-6">
-          <p className="text-grafito font-mono text-xs tracking-[0.15em] uppercase">Requiere atención</p>
-          <p className={`text-4xl font-semibold ${warnings ? 'text-bermellon' : ''}`}>{warnings}</p>
-          <p className="text-grafito text-sm">{warnings ? 'Revisa la lista de abajo' : 'Nada urgente'}</p>
-        </div>
-        <div className="tarjeta flex flex-col gap-2 p-6">
-          <p className="text-grafito font-mono text-xs tracking-[0.15em] uppercase">Última revisión</p>
-          <p className="text-4xl font-semibold">{lastCheck ? ago(lastCheck) : '—'}</p>
-          <p className="text-grafito text-sm">{report.agents.length} agentes vigilando</p>
-        </div>
+      <section
+        aria-label="Cifras del día"
+        className="tarjeta bg-rejilla [&>*]:bg-papel-claro grid gap-[1.5px] sm:grid-cols-2 xl:grid-cols-4"
+      >
+        <Figure label="Podrías liberar" value={bytes(report.reclaimableBytes)}>
+          Sumando las sugerencias. Nada se borra sin tu permiso.
+        </Figure>
+        <Figure label="Requiere atención" value={String(warnings)} tone={warnings ? 'alerta' : undefined}>
+          {warnings ? 'Está primero en la lista' : 'Nada urgente'}
+        </Figure>
+        {report.pendingActions ? (
+          <button
+            type="button"
+            onClick={onApprovals}
+            className="group hover:!bg-papel cursor-pointer text-left"
+          >
+            <Figure label="Por aprobar" value={String(report.pendingActions)} tone="accion">
+              <span className="text-cobalto underline underline-offset-4 group-hover:no-underline">
+                Ver propuestas
+              </span>
+            </Figure>
+          </button>
+        ) : (
+          <Figure label="Por aprobar" value="0">
+            Tus agentes no proponen nada
+          </Figure>
+        )}
+        <Figure label="Revisaron hace" value={lastCheck ? ago(lastCheck).replace('hace ', '') : '—'}>
+          {report.agents.length} agentes vigilando
+        </Figure>
       </section>
 
       {report.items.length === 0 ? (
         <p className="tarjeta text-grafito p-6">
-          Tus agentes todavía no han revisado la PC. Usa «Revisar ahora».
+          Tus agentes todavía no han revisado la PC. Pulsa «Revisar ahora» para empezar.
         </p>
       ) : (
         SECTIONS.map((section) => {

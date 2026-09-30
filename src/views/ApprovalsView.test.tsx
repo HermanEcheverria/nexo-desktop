@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
 import type { Action } from '../lib/types'
-import { ApprovalsView } from './ApprovalsView'
+import { ApprovalsView, splitTitle } from './ApprovalsView'
 
 const GB = 1024 ** 3
 const action = (id: number, title: string, bytes: number): Action => ({
@@ -34,6 +34,7 @@ vi.mock('../lib/api', () => ({
       action(2, 'Apartar caché de pip', 6 * GB),
     ],
     undoableActions: async () => [],
+    agents: async () => [{ name: 'inventario', title: 'Inventario' }],
     decide: (id: number, verb: string) => decide(id, verb),
   },
 }))
@@ -46,7 +47,10 @@ describe('ApprovalsView', () => {
         <ApprovalsView />
       </QueryClientProvider>,
     )
-    expect(await screen.findByText('Liberarían 41 GB en total')).toBeInTheDocument()
+    expect(await screen.findByText('41 GB')).toBeInTheDocument()
+    // El nombre del archivo va primero; la acción y quién la propuso, debajo
+    expect(screen.getByText('juego.zip')).toBeInTheDocument()
+    expect(await screen.findByText('Mover a cuarentena. Lo propuso Inventario.')).toBeInTheDocument()
 
     const user = userEvent.setup()
     const [aprobar] = screen.getAllByRole('button', { name: 'Aprobar' })
@@ -56,5 +60,15 @@ describe('ApprovalsView', () => {
     const rechazar = screen.getAllByRole('button', { name: 'Rechazar' })[1]!
     await user.click(rechazar)
     expect(decide).toHaveBeenCalledWith(2, 'rechazar')
+  })
+})
+
+describe('splitTitle', () => {
+  it('separa el archivo de la acción; un título sin comillas queda igual', () => {
+    expect(splitTitle('Mover a cuarentena «a «b».zip»')).toEqual({
+      what: 'a «b».zip',
+      verb: 'Mover a cuarentena',
+    })
+    expect(splitTitle('Apartar caché de pip')).toEqual({ what: 'Apartar caché de pip', verb: null })
   })
 })

@@ -56,7 +56,12 @@
 
 /* Botón con sombra de grabado */
 @utility boton {
-  @apply border-tinta bg-papel-claro inline-flex cursor-pointer items-center gap-2 border-[1.5px] px-3.5 py-2 font-mono text-sm shadow-[3px_3px_0_var(--color-tinta)] transition-[transform,box-shadow] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--color-tinta)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:cursor-wait disabled:opacity-60;
+  @apply border-tinta bg-papel-claro inline-flex cursor-pointer items-center gap-2 border-[1.5px] px-3.5 py-2 font-mono text-sm shadow-[3px_3px_0_var(--color-tinta)] transition-[transform,box-shadow] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--color-tinta)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:translate-0 disabled:cursor-default disabled:opacity-50 disabled:shadow-none aria-busy:cursor-wait;
+}
+
+/* Rótulo de sección o de dato: pequeño, en grafito y en minúsculas normales */
+@utility rotulo {
+  @apply text-grafito text-sm;
 }
 
 /* Barra de desplazamiento delgada, en tinta sobre papel */

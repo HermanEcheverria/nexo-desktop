@@ -51,13 +51,13 @@ describe('RunPanel', () => {
       </QueryClientProvider>,
     )
     expect(await screen.findByText('Qué cambió desde la revisión anterior')).toBeInTheDocument()
-    expect(screen.getByText('✓ resuelto')).toBeInTheDocument()
+    expect(screen.getByText('✓ Resuelto')).toBeInTheDocument()
     expect(screen.getByText('No hay ningún antivirus activo')).toBeInTheDocument()
     const titles = screen.getAllByText(/PostgreSQL acepta|Firewall activo/).map((e) => e.textContent)
     // En la lista de hallazgos, la alerta va antes que el dato
     expect(titles.at(-2)).toMatch(/PostgreSQL/)
     expect(titles.at(-1)).toMatch(/Firewall/)
-    expect(screen.getByText(/tardó 4.0 s · 1 alerta · 1 dato/)).toBeInTheDocument()
+    expect(screen.getByText(/en 4.0 s: 1 alerta · 1 dato/)).toBeInTheDocument()
   })
 
   it('resume los conteos en palabras', () => {

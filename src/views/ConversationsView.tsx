@@ -111,7 +111,7 @@ export function ConversationsView({ incoming, onIncomingHandled, onNavigate, onT
                 className="border-rejilla hover:bg-papel-claro aria-[current=true]:bg-tinta aria-[current=true]:text-papel flex w-full cursor-pointer flex-col gap-0.5 border-b px-4 py-3 pr-10 text-left"
               >
                 <span className="truncate text-sm font-medium">{c.title}</span>
-                <span className="font-mono text-[11px] opacity-70">
+                <span className="text-xs opacity-70">
                   {c.messages} {c.messages === 1 ? 'mensaje' : 'mensajes'} · {ago(c.updatedAt)}
                 </span>
               </button>
@@ -152,7 +152,7 @@ export function ConversationsView({ incoming, onIncomingHandled, onNavigate, onT
                   <Bubble message={{ role: 'user', content: optimistic }} onNavigate={onNavigate} />
                   <li className="text-grafito flex items-center gap-3">
                     <NexoLogo state="pensando" size={44} />
-                    <span className="font-mono text-sm">Pensando…</span>
+                    <span className="text-sm">Pensando…</span>
                   </li>
                 </>
               )}
@@ -167,7 +167,7 @@ export function ConversationsView({ incoming, onIncomingHandled, onNavigate, onT
           </p>
         )}
         <form
-          className="border-tinta flex items-end gap-3 border-t-[1.5px] p-4"
+          className="border-tinta flex items-stretch gap-3 border-t-[1.5px] p-4"
           onSubmit={(event) => {
             event.preventDefault()
             submit()
@@ -192,7 +192,12 @@ export function ConversationsView({ incoming, onIncomingHandled, onNavigate, onT
             placeholder="Escríbele a Nexo…  (Enter para enviar)"
             className="tarjeta placeholder:text-grafito focus-visible:border-cobalto min-w-0 flex-1 resize-none px-4 py-2.5 outline-none"
           />
-          <button type="submit" className="boton" disabled={send.isPending || draft.trim().length < 2}>
+          <button
+            type="submit"
+            className="boton self-end"
+            disabled={send.isPending || draft.trim().length < 2}
+            aria-busy={send.isPending}
+          >
             Enviar
           </button>
         </form>
@@ -224,22 +229,59 @@ function Bubble({
     <li className="flex gap-3">
       <NexoLogo state="reposo" size={32} decorative />
       <div className="flex max-w-[85%] flex-col gap-2">
-        <p data-copiable className="tarjeta px-4 py-2.5 leading-relaxed whitespace-pre-line">
-          {message.content}
-        </p>
-        <div className="flex flex-wrap gap-2 font-mono text-xs">
+        <div data-copiable className="tarjeta flex flex-col gap-3 px-4 py-3 leading-relaxed">
+          <RichText text={message.content} />
+        </div>
+        <div className="flex flex-wrap gap-2 text-sm">
           {message.intent === 'ver_aprobaciones' && (
             <button type="button" className="boton py-1" onClick={() => onNavigate('aprobaciones')}>
-              Ir a Aprobaciones →
+              Ir a Aprobaciones
             </button>
           )}
           {message.pid && (
             <button type="button" className="boton py-1" onClick={() => onNavigate('bitacora')}>
-              Ver al {message.agent} trabajando →
+              Ver al {message.agent} trabajando
             </button>
           )}
         </div>
       </div>
     </li>
   )
+}
+
+const LIST_ITEM = /^\s*(?:[-•*]|\d+[.)])\s+/
+
+/**
+ * Las respuestas del modelo traen listas con guiones: se muestran como listas de verdad.
+ * Solo se reconocen párrafos y listas; el texto nunca se interpreta como HTML.
+ */
+export function RichText({ text }: { text: string }) {
+  const blocks = text.trim().split(/\n\s*\n/)
+  return blocks.map((block, i) => {
+    const lines = block.split('\n').filter((l) => l.trim())
+    const items = lines.filter((l) => LIST_ITEM.test(l))
+    if (items.length === 0) {
+      return (
+        <p key={i} className="whitespace-pre-line">
+          {block}
+        </p>
+      )
+    }
+    // Un párrafo puede terminar en dos puntos y seguir con la lista, sin línea en blanco
+    const intro = lines.slice(0, lines.indexOf(items[0]!))
+    const ordered = /^\s*\d/.test(items[0]!)
+    const List = ordered ? 'ol' : 'ul'
+    return (
+      <div key={i} className="flex flex-col gap-1.5">
+        {intro.length > 0 && <p>{intro.join(' ')}</p>}
+        <List
+          className={`flex flex-col gap-1 pl-5 ${ordered ? 'list-decimal' : 'marker:text-cobalto list-disc'}`}
+        >
+          {lines.slice(intro.length).map((line, j) => (
+            <li key={j}>{line.replace(LIST_ITEM, '')}</li>
+          ))}
+        </List>
+      </div>
+    )
+  })
 }

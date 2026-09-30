@@ -39,9 +39,7 @@ export function Sidebar({ view, onChange, status, live, onWorkstation, pending, 
           <NexoLogo state={state} size={52} />
           <p className="font-display text-4xl leading-none">Nexo</p>
         </div>
-        <p className="text-grafito mt-2 font-mono text-[11px] tracking-[0.15em] uppercase">
-          Sistema operativo de agentes
-        </p>
+        <p className="rotulo mt-2">Tus agentes, en tu PC</p>
       </div>
 
       <nav aria-label="Secciones" className="flex flex-col gap-1 p-3">
@@ -70,10 +68,10 @@ export function Sidebar({ view, onChange, status, live, onWorkstation, pending, 
         <button type="button" className="boton justify-center" onClick={onWorkstation}>
           Levantar estación
         </button>
-        <p className="flex items-center gap-2 font-mono text-xs" role="status">
+        <p className="flex items-center gap-2 text-xs" role="status">
           <span className={`inline-block size-2 rounded-full ${s.dot}`} aria-hidden="true" />
           {s.label}
-          {status === 'ready' && <span className="text-grafito">· {live ? 'en vivo' : 'reconectando'}</span>}
+          {status === 'ready' && <span className="text-grafito">{live ? 'en vivo' : 'reconectando…'}</span>}
         </p>
       </div>
     </aside>

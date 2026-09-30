@@ -34,3 +34,20 @@ export function greeting(date = new Date()): string {
   const h = date.getHours()
   return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches'
 }
+
+/** "hoy 07:09", "ayer 20:02" o "28 sep 14:00": la hora sola no basta en una lista de varios días. */
+export function dayTime(iso: string, now = new Date()): string {
+  const date = new Date(iso)
+  const days = Math.round((startOfDay(now) - startOfDay(date)) / 86_400_000)
+  const day =
+    days === 0
+      ? 'hoy'
+      : days === 1
+        ? 'ayer'
+        : date.toLocaleDateString(LOCALE, { day: 'numeric', month: 'short' }).replace('.', '')
+  return `${day} ${timeOf(iso)}`
+}
+
+function startOfDay(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+}

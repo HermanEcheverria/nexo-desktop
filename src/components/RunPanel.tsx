@@ -53,7 +53,7 @@ function Change({ change }: { change: RunChange }) {
   if (change.kind === 'cambio') {
     return (
       <li className="flex gap-2">
-        <span className="text-grafito w-20 shrink-0 font-mono text-xs uppercase">cambió</span>
+        <span className="text-grafito w-20 shrink-0">Cambió</span>
         <span>
           <span className="text-grafito line-through">{change.before}</span> → {change.after}
         </span>
@@ -62,10 +62,8 @@ function Change({ change }: { change: RunChange }) {
   }
   return (
     <li className="flex gap-2">
-      <span
-        className={`w-20 shrink-0 font-mono text-xs uppercase ${change.kind === 'nuevo' ? m.className : 'text-grafito'}`}
-      >
-        {change.kind === 'nuevo' ? `${m.mark} nuevo` : '✓ resuelto'}
+      <span className={`w-20 shrink-0 ${change.kind === 'nuevo' ? m.className : 'text-grafito'}`}>
+        {change.kind === 'nuevo' ? `${m.mark} Nuevo` : '✓ Resuelto'}
       </span>
       <span className={change.kind === 'resuelto' ? 'text-grafito' : ''}>{change.title}</span>
     </li>
@@ -95,7 +93,7 @@ export function RunPanel({
     const steps = (live.length ? live : (details.data?.steps ?? [])).map(stepText).filter(Boolean)
     return (
       <div className="border-rejilla flex flex-col gap-3 border-t-[1.5px] pt-4" aria-live="polite">
-        <p className="flex items-center gap-3 font-mono text-sm">
+        <p className="flex items-center gap-3 text-sm font-medium">
           <NexoLogo state="trabajando" size={36} />
           Revisando tu PC…
         </p>
@@ -122,18 +120,16 @@ export function RunPanel({
 
   return (
     <div className="border-rejilla flex flex-col gap-4 border-t-[1.5px] pt-4">
-      <p className="text-grafito font-mono text-xs">
-        Proceso #{d.process.pid} · {d.process.finishedAt ? ago(d.process.finishedAt) : ''}
-        {duration && ` · tardó ${duration}`} · {summaryText(d.summary)}
+      <p className="rotulo">
+        Terminó {d.process.finishedAt ? ago(d.process.finishedAt) : ''}
+        {duration && ` en ${duration}`}: {summaryText(d.summary)}.
       </p>
 
       {d.process.state === 'failed' && <p className="text-bermellon">No terminó bien: {d.process.error}</p>}
 
       {d.changes && (
         <section className="flex flex-col gap-1.5">
-          <h3 className="text-grafito font-mono text-xs tracking-[0.15em] uppercase">
-            Qué cambió desde la revisión anterior
-          </h3>
+          <h3 className="font-medium">Qué cambió desde la revisión anterior</h3>
           {important.length === 0 ? (
             <p className="text-grafito text-sm">Nada importante: todo sigue igual.</p>
           ) : (
@@ -147,7 +143,7 @@ export function RunPanel({
       )}
 
       <section className="flex flex-col gap-1.5">
-        <h3 className="text-grafito font-mono text-xs tracking-[0.15em] uppercase">Lo que encontró</h3>
+        <h3 className="font-medium">Lo que encontró</h3>
         <ul className="flex flex-col gap-2">
           {findings.map((f) => (
             <li key={f.id} className="flex gap-2 text-sm">
@@ -173,7 +169,7 @@ export function RunPanel({
             ejecuta sin tu permiso.
           </p>
           <button type="button" className="boton py-1 text-xs" onClick={() => onNavigate('aprobaciones')}>
-            Revisar propuestas →
+            Ver propuestas
           </button>
         </div>
       )}

@@ -1,4 +1,4 @@
-import { useDecide, usePendingActions, useUndoableActions } from '../hooks/queries'
+import { useAgents, useDecide, usePendingActions, useUndoableActions } from '../hooks/queries'
 import { ApiError } from '../lib/api'
 import { bytes } from '../lib/format'
 import type { Action } from '../lib/types'
@@ -10,12 +10,23 @@ function until(action: Action): string {
   return end.toLocaleDateString('es-GT', { day: 'numeric', month: 'long' })
 }
 
+/**
+ * "Mover a cuarentena «archivo.zip»" → qué (archivo.zip) y cómo (Mover a cuarentena),
+ * para que el nombre del archivo sea lo primero que se lee.
+ */
+export function splitTitle(title: string): { what: string; verb: string | null } {
+  const match = /^(.+?)\s«(.+)»$/.exec(title)
+  return match ? { what: match[2]!, verb: match[1]! } : { what: title, verb: null }
+}
+
 export function ApprovalsView() {
   const { data: actions = [], isPending } = usePendingActions()
   // Lo que más espacio libera, primero
   const pending = [...actions].sort((a, b) => (b.bytes ?? 0) - (a.bytes ?? 0))
   const { data: undoable = [] } = useUndoableActions()
   const decide = useDecide()
+  const { data: agents = [] } = useAgents()
+  const agentTitle = (name: string) => agents.find((a) => a.name === name)?.title ?? name
   const total = pending.reduce((s, a) => s + (a.bytes ?? 0), 0)
   const busy = (id: number) => decide.isPending && decide.variables?.id === id
   const error = decide.error instanceof ApiError ? decide.error.message : decide.error?.message
@@ -23,11 +34,10 @@ export function ApprovalsView() {
   return (
     <div className="flex flex-col gap-8 p-8 lg:p-10">
       <header>
-        <p className="text-grafito font-mono text-xs tracking-[0.2em] uppercase">Tú decides</p>
-        <h1 className="font-display mt-2 text-5xl">Aprobaciones</h1>
+        <h1 className="font-display text-5xl">Aprobaciones</h1>
         <p className="text-tinta-suave mt-3 max-w-2xl">
-          Tus agentes proponen; nada cambia sin tu permiso. Lo que apruebas va a una cuarentena y lo puedes
-          deshacer durante {UNDO_DAYS} días. Después se borra de verdad.
+          Tus agentes proponen y tú decides. Lo que apruebas va a una cuarentena: puedes devolverlo durante{' '}
+          {UNDO_DAYS} días y después se borra de verdad.
         </p>
       </header>
 
@@ -42,7 +52,11 @@ export function ApprovalsView() {
           <h2 id="pendientes" className="font-display text-2xl">
             Esperan tu decisión {pending.length > 0 && `(${pending.length})`}
           </h2>
-          {total > 0 && <p className="text-grafito font-mono text-sm">Liberarían {bytes(total)} en total</p>}
+          {total > 0 && (
+            <p className="rotulo">
+              Liberarían <span className="cifras text-tinta font-medium">{bytes(total)}</span> en total
+            </p>
+          )}
         </div>
         {isPending ? (
           <p className="text-grafito">Cargando…</p>
@@ -52,40 +66,45 @@ export function ApprovalsView() {
           </p>
         ) : (
           <ul className="flex flex-col gap-3">
-            {pending.map((a) => (
-              <li key={a.id} className="tarjeta flex flex-wrap items-center gap-4 p-5">
-                <div className="flex min-w-0 flex-1 flex-col gap-1">
-                  <p className="font-medium">
-                    {a.title}
-                    {a.bytes ? (
-                      <span className="cifras text-cobalto ml-2 font-mono text-sm">{bytes(a.bytes)}</span>
-                    ) : null}
-                  </p>
-                  {a.detail && <p className="text-tinta-suave text-sm">{a.detail}</p>}
-                  <p className="text-grafito font-mono text-xs">
-                    #{a.id} · propuesto por {a.agent}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    className="boton"
-                    disabled={busy(a.id)}
-                    onClick={() => decide.mutate({ id: a.id, verb: 'rechazar' })}
-                  >
-                    Rechazar
-                  </button>
-                  <button
-                    type="button"
-                    className="boton bg-tinta text-papel"
-                    disabled={busy(a.id)}
-                    onClick={() => decide.mutate({ id: a.id, verb: 'aprobar' })}
-                  >
-                    {busy(a.id) ? 'Moviendo…' : 'Aprobar'}
-                  </button>
-                </div>
-              </li>
-            ))}
+            {pending.map((a) => {
+              const { what, verb } = splitTitle(a.title)
+              return (
+                <li key={a.id} className="tarjeta flex flex-wrap items-center gap-4 p-5">
+                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <p className="flex flex-wrap items-baseline gap-x-3 font-medium">
+                      <span data-copiable className="break-all">
+                        {what}
+                      </span>
+                      {a.bytes ? (
+                        <span className="cifras text-cobalto font-mono text-sm">{bytes(a.bytes)}</span>
+                      ) : null}
+                    </p>
+                    {a.detail && <p className="text-tinta-suave text-sm">{a.detail}</p>}
+                    <p className="rotulo">
+                      {verb ? `${verb}. ` : ''}Lo propuso {agentTitle(a.agent)}.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className="boton"
+                      disabled={busy(a.id)}
+                      onClick={() => decide.mutate({ id: a.id, verb: 'rechazar' })}
+                    >
+                      Rechazar
+                    </button>
+                    <button
+                      type="button"
+                      className="boton bg-tinta text-papel"
+                      disabled={busy(a.id)}
+                      onClick={() => decide.mutate({ id: a.id, verb: 'aprobar' })}
+                    >
+                      {busy(a.id) ? 'Moviendo…' : 'Aprobar'}
+                    </button>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
@@ -102,10 +121,10 @@ export function ApprovalsView() {
                 className="border-rejilla flex flex-wrap items-center gap-4 border-b-[1.5px] py-3 last:border-b-0"
               >
                 <div className="min-w-0 flex-1">
-                  <p>{a.title}</p>
-                  <p className="text-grafito font-mono text-xs">
-                    #{a.id} · se borra definitivamente el {until(a)}
+                  <p data-copiable className="break-all">
+                    {splitTitle(a.title).what}
                   </p>
+                  <p className="rotulo">Se borra definitivamente el {until(a)}.</p>
                 </div>
                 <button
                   type="button"
@@ -113,7 +132,7 @@ export function ApprovalsView() {
                   disabled={busy(a.id)}
                   onClick={() => decide.mutate({ id: a.id, verb: 'deshacer' })}
                 >
-                  {busy(a.id) ? 'Devolviendo…' : 'Deshacer'}
+                  {busy(a.id) ? 'Devolviendo…' : 'Devolver'}
                 </button>
               </li>
             ))}

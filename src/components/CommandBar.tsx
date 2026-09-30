@@ -57,13 +57,13 @@ export function CommandBar({ onAsk }: { onAsk: (question: string) => void }) {
           Preguntar
         </button>
       </form>
-      <p className="text-grafito mt-2 flex flex-wrap gap-2 font-mono text-xs">
-        Prueba:
+      <p className="text-grafito mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
+        Prueba con
         {EXAMPLES.map((example) => (
           <button
             key={example}
             type="button"
-            className="decoration-rejilla hover:text-cobalto cursor-pointer underline underline-offset-4"
+            className="hover:text-cobalto hover:decoration-cobalto cursor-pointer underline decoration-[color-mix(in_srgb,currentColor_35%,transparent)] underline-offset-4"
             onClick={() => submit(example)}
           >
             {example}
