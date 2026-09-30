@@ -46,7 +46,11 @@ export function useJournal(enabled: boolean) {
               if (event.type === 'exit' || event.type === 'start') {
                 void client.invalidateQueries({ queryKey: keys.processes })
               }
-              if (event.type === 'exit') void client.invalidateQueries({ queryKey: keys.report })
+              if (event.type === 'exit') {
+                void client.invalidateQueries({ queryKey: keys.report })
+                void client.invalidateQueries({ queryKey: keys.agents })
+                if (event.pid) void client.invalidateQueries({ queryKey: keys.run(event.pid) })
+              }
               if (
                 ['proposal', 'action_done', 'action_failed', 'rejected', 'undone', 'purged'].includes(
                   event.type,

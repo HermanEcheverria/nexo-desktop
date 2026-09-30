@@ -108,7 +108,7 @@ export default function App() {
         ) : view === 'aprobaciones' ? (
           <ApprovalsView />
         ) : view === 'agentes' ? (
-          <AgentsView />
+          <AgentsView events={events} onNavigate={go} />
         ) : (
           <JournalView events={events} live={live} />
         )}

@@ -8,6 +8,7 @@ export const keys = {
   processes: ['procesos'] as const,
   actions: ['acciones'] as const,
   conversations: ['conversaciones'] as const,
+  run: (pid: number) => ['proceso', pid] as const,
 }
 
 export const useReport = (enabled = true) => useQuery({ queryKey: keys.report, queryFn: api.report, enabled })

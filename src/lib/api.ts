@@ -9,6 +9,7 @@ import type {
   JournalEvent,
   Process,
   Report,
+  RunDetails,
 } from './types'
 
 export const API = 'http://127.0.0.1:4747'
@@ -66,6 +67,7 @@ export const api = {
   report: () => request<Report>('/parte'),
   agents: () => request<AgentInfo[]>('/agentes'),
   processes: (n = 30) => request<Process[]>(`/ps?n=${n}`),
+  run: (pid: number) => request<RunDetails>(`/procesos/${pid}`),
   journal: (n = 80) => request<JournalEvent[]>(`/logs?n=${n}`),
   runAgent: (name: string) =>
     request<{ pid: number }>(`/ejecutar/${encodeURIComponent(name)}`, { method: 'POST' }),

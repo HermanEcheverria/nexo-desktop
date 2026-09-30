@@ -21,13 +21,18 @@ export type Report = {
   userName?: string
 }
 
+export type Risk = 'read' | 'write' | 'external'
+
+export type RunSummary = { warning: number; suggestion: number; info: number }
+
 export type AgentInfo = {
   name: string
   title: string
   description: string
   everyMinutes: number
   onLogin: boolean
-  capabilities: string[]
+  capabilities: { name: string; risk: Risk | null }[]
+  lastRun: { pid: number; state: ProcessState; finishedAt: string | null; summary: RunSummary } | null
 }
 
 export type ProcessState = 'ready' | 'running' | 'done' | 'failed' | 'interrupted' | 'killed'
@@ -87,4 +92,18 @@ export type ChatMessage = {
   agent: string | null
   pid: number | null
   createdAt: string
+}
+
+export type RunChange =
+  | { kind: 'nuevo' | 'resuelto'; level: Level; title: string }
+  | { kind: 'cambio'; level: Level; before: string; after: string }
+
+export type RunDetails = {
+  process: Process
+  steps: JournalEvent[]
+  findings: { id: number; level: Level; title: string; detail: string | null; bytes: number | null }[]
+  summary: RunSummary
+  proposals: Action[]
+  changes: RunChange[] | null
+  previousAt: string | null
 }
